@@ -1,26 +1,24 @@
 package com.ms.portfoliomanager.publisher;
 
 import com.ms.portfoliomanager.model.Portfolio;
-import com.ms.portfoliomanager.model.Position;
 import com.ms.portfoliomanager.util.PortfolioPopulator;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
 import javax.jms.Topic;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
 
 
 @Component
 public class PortfolioPublisher {
 
     //private Topic topic;
-    Map<String, Topic> userTopicMap;
+    public Map<String, Topic> userTopicMap;
+    public Map<String, Portfolio> userPublishMap;
 
     @Autowired
     PortfolioPopulator portfolioPopulator;
@@ -30,25 +28,21 @@ public class PortfolioPublisher {
     PortfolioPublisher(JmsTemplate jmsTemplate){
         this.jmsTemplate = jmsTemplate;
         userTopicMap = new HashMap<>();
+        userPublishMap = new HashMap<>();
     }
-    //@PostConstruct
-    public void publish() throws JMSException {//List<String> tickers,String user
+
+    public void createPortfolio(Portfolio portfolio) {
         Topic userTopic;
-        String user = "Anil";
-        if(userTopicMap.containsKey(user)){
-            userTopic = userTopicMap.get(user);
+        if(userTopicMap.containsKey(portfolio.getUserId())){
+            userTopic = userTopicMap.get(portfolio.getUserId());
         }else{
-            userTopic = new ActiveMQTopic(user + "_Portfolio.topic");
-            userTopicMap.put("Anil",userTopic);
+            userTopic = new ActiveMQTopic(portfolio.getUserId() + ".topic");
+            userTopicMap.put(portfolio.getUserId(),userTopic);
 
         }
-
-        System.out.println("Sending Portfolio.  " + userTopic.getTopicName());
-        Position position = Position.builder().build();
-        Position position1 = Position.builder().build();
-        List<Position> positions = Arrays.asList(position,position1);
-        Portfolio portfolio=Portfolio.builder().positions(positions).build();
-        jmsTemplate.convertAndSend( userTopic, portfolioPopulator.populate(portfolio));
+        if(!userPublishMap.containsKey(portfolio.getUserId())){
+            userPublishMap.put(portfolio.getUserId(),portfolio);
+        }
     }
 
 }

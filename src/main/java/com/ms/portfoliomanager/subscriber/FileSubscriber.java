@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.jms.JMSException;
 import javax.servlet.http.HttpServletResponse;
 
 @Log
@@ -23,8 +22,8 @@ public class FileSubscriber {
     PortfolioPublisher portfolioPublisher;
 
     @GetMapping("/download.excel")
-    public void getPortfolioFileOnDemand(HttpServletResponse response) throws JMSException {
-        portfolioPublisher.publish();
+    public void getPortfolioFileOnDemand(HttpServletResponse response) {
+       // portfolioPublisher.publish();
         log.info("Started Publishing Portfoilo Publisher");
         fileService.getPortfolioFileOnDemand(response);
     }

@@ -1,27 +1,42 @@
 package com.ms.portfoliomanager.config;
 
+import com.ms.portfoliomanager.model.Ticker;
 import com.ms.portfoliomanager.publisher.MarketDataPublisher;
+import com.ms.portfoliomanager.subscriber.MarketDataSubscriber;
 import lombok.extern.java.Log;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerEndpointRegistrar;
+import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
 
 @EnableJms
 @Configuration
 @Log
-public class Config {//implements JmsListenerConfigurer {
+public class Config implements JmsListenerConfigurer {
 
     public static final String USER_PORTFOLIO = "user_portfolio.topic";
 
+    @Bean
+    DefaultJmsListenerContainerFactory getFactory(){
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setPubSubDomain(true);
+        return factory;
+    }
     @Bean
     public JmsListenerContainerFactory<?> topicListenerFactory(ConnectionFactory connectionFactory,
                                                                DefaultJmsListenerContainerFactoryConfigurer configurer) {
@@ -30,7 +45,6 @@ public class Config {//implements JmsListenerConfigurer {
         factory.setPubSubDomain(true);
         return factory;
     }
-
     @Bean // Serialize message content to json using TextMessage
     public MessageConverter jacksonJmsMessageConverter() {
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
@@ -41,19 +55,36 @@ public class Config {//implements JmsListenerConfigurer {
 
     @Autowired
     MarketDataPublisher marketDataPublisher;
+    @Autowired
+    MarketDataSubscriber marketDataSubscriber;
 
-//    @Override
-//    public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
-//        marketDataPublisher.getTopicsMap(null).keySet().stream().forEach(s -> {
-//            SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
-//            endpoint.setId(s);
-//            log.info(" listening to  " + s+".topic");
-//            endpoint.setDestination(s+".topic");
-//            endpoint.setMessageListener(message -> {
-//
-//            });
-//            registrar.registerEndpoint(endpoint);
-//        }
-//);
-//    }
+    @Override
+    public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
+        marketDataPublisher.initTopicsMap().keySet().stream().forEach(s -> {
+            SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+            endpoint.setId(s);
+            log.info(" listening to  " + s+".topic");
+            endpoint.setDestination(s+".topic");
+            endpoint.setMessageListener(message -> {
+                //System.out.println("Received Message By Market Consumer from  Market Publisher  : " + message);
+                try {
+                    TextMessage textMessage = (TextMessage) message;
+                    String payload = textMessage.getText();
+                   //  Ticker ticker = message.getBody(Ticker.class);
+                   JSONObject obj =  new JSONObject(payload);//message.getBody(JSONObject.class);
+                    Ticker tic = Ticker.builder()
+                            .shareName(obj.get("shareName").toString())
+                            .initialMarketValue(Double.valueOf(obj.get("initialMarketValue").toString()))
+                            .tickerCode(obj.get("tickerCode").toString())
+                            .build();
+                     marketDataSubscriber.receive(tic);
+                    log.info("Market Consumer : " + tic);
+                } catch (JMSException | JSONException e) {
+                   log.info("Error while Converting the Values ");
+                }
+            });
+            registrar.registerEndpoint(endpoint);
+        }
+        );
+    }
 }

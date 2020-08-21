@@ -16,18 +16,33 @@ import java.util.List;
 public class FileServiceImpl implements FileService{
 
 
+
+    Boolean isPublish = false;
+    Portfolio portfolio = null;
     @Override
     public void getPortfolioFileOnDemand(HttpServletResponse response) {
-        Portfolio portfolio = receiveMessage(Portfolio.builder().build());
-        writeDataToExcelUsingString(response,portfolio);
+        isPublish = true;
+        //Portfolio portfolio = receiveMessage(Portfolio.builder().build());
+        while(isPublish) {
+            if(portfolio!=null) {
+                isPublish = false;
+                writeDataToExcelUsingString(response, portfolio);
+                portfolio = null;
+            }
+        }
     }
-  @JmsListener(destination = "Anil_Portfolio.topic", containerFactory = "topicListenerFactory")
-    private Portfolio receiveMessage(Portfolio portfolio) {
-        return portfolio;
+   @JmsListener(destination = "user_01.topic", containerFactory = "topicListenerFactory")
+    private void receiveMessage(Portfolio portfolio) {
+        if(isPublish){
+            this.portfolio = portfolio;
+            //writeDataToExcelUsingString(httpServletResponse,portfolio);
+            isPublish = false;
+        }
+
     }
 
     private void writeDataToExcelUsingString(HttpServletResponse response, Portfolio portfolio) {
-        String dataHeader = " shareCode,shareName,noOfShares,currentValue,totalValue";
+        String dataHeader = " shareCode,shareName,noOfShares,currentValue,totalValue,Net Asset Value";//TODO these can be Picked from the Properties files
         StringBuilder dataBody = new StringBuilder();
         if(portfolio!=null){
             List<Position> positions = portfolio.getPositions();
@@ -37,7 +52,9 @@ public class FileServiceImpl implements FileService{
                             .append(pos.getShareName()).append(",")
                             .append(pos.getNoOfShares()).append(",")
                             .append(pos.getCurrentValue()).append(",")
-                            .append(pos.getTotalValue()).append(",");
+                            .append(pos.getTotalValue()).append(",")
+                            .append(portfolio.getNetAssetValue()).append(",")
+                            .append(System.lineSeparator());
                 }
 
             }

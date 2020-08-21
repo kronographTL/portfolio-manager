@@ -1,23 +1,15 @@
 package com.ms.portfoliomanager.subscriber;
 
 import com.ms.portfoliomanager.model.Portfolio;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
 
 
 @Component
 public class ConsoleSubscriber {
 
-    @Autowired
-    JmsTemplate jmsTemplate;
-    //@PostConstruct
-    public void receiveTopicMessage(Portfolio portfolio) throws JMSException {
-        Message body = jmsTemplate.receive("Anil"+"_Portfolio.topic");
-
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + body.getBody(Portfolio.class).getNetAssetValue());
+    @JmsListener(destination = "user_01.topic", containerFactory = "topicListenerFactory")
+    public void receiveTopicMessage(Portfolio portfolio) {
+        System.out.println("The User current Portfolio is   :       " + portfolio);
     }
 }
