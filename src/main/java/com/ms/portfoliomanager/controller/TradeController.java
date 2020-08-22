@@ -3,6 +3,7 @@ package com.ms.portfoliomanager.controller;
 import com.ms.portfoliomanager.model.Portfolio;
 import com.ms.portfoliomanager.model.Position;
 import com.ms.portfoliomanager.publisher.PortfolioPublisher;
+import com.ms.portfoliomanager.util.UtilityConstants;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,7 @@ public class TradeController {
         try(Stream<String> lines = Files.lines(Paths.get((filePath))))
         {
             List<Position> positions = lines.skip(1).map(l-> {
-                String[] strings = l.split(",");
+                String[] strings = l.split(UtilityConstants.COMMA);
                 return Position.builder().shareCode(strings[0]).noOfShares(Integer.parseInt(strings[1])).build();
             }).collect(Collectors.toList());
             //TODO

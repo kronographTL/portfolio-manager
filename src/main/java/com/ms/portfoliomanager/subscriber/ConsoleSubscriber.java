@@ -24,7 +24,7 @@ public class ConsoleSubscriber {
         System.out.println("    TIME                "+ ZonedDateTime.now());
         System.out.println("    Positions");
         for (Position p : portfolio.getPositions()){
-            System.out.println("                    "+p.toString());
+            System.out.println("                        "+p.toString());
         }
         System.out.println(System.lineSeparator()+"    Net Asset Value     "+portfolio.getNetAssetValue());
         System.out.println("_____________________________________________________________________________________________________________________________________________________"+System.lineSeparator());

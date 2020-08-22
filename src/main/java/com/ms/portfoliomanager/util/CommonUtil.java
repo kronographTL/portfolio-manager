@@ -12,15 +12,12 @@ import java.util.Locale;
 
 public class CommonUtil {
 
-
-
     public static String getDateString(LocalDateTime dateTime, String datePatten) {
         if (dateTime == null) {
             return UtilityConstants.EMPTY_STRING;
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat(datePatten, Locale.US);
             Date date = localDateTimeToDate(dateTime);
-            //return String.valueOf(sdf.format(date));
             return sdf.format(date);
         }
     }
@@ -28,16 +25,13 @@ public class CommonUtil {
     private static Date localDateTimeToDate(LocalDateTime dateTime) {
         ZoneId zone = ZoneId.systemDefault();
         Instant instant = dateTime.atZone(zone).toInstant();
-        //java.util.Date date = Date.from(instant);
         return Date.from(instant);
     }
 
 
     public static TickerDTO generateSharePrice(TickerDTO ticker, int delay) {
-        // TODO Brownian Motion
-        //converting time in seconds
         double timeInSeconds = delay/10;
-        Double value = GBMotionCalculator.geometricMotion(ticker.getExpectedReturn(),ticker.getAnnualizedStandardDeviation(),timeInSeconds,ticker.getMarketValue(),0.33);//new Random().nextDouble();
+        Double value = GBMotionCalculator.geometricMotionForStocks(ticker.getExpectedReturn(),ticker.getAnnualizedStandardDeviation(),timeInSeconds,ticker.getMarketValue(),0.33);//new Random().nextDouble();
         ticker.setMarketValue(value);
         return ticker;
     }
