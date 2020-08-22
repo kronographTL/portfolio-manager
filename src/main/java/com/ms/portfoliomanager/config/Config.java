@@ -1,11 +1,12 @@
 package com.ms.portfoliomanager.config;
 
-import com.ms.portfoliomanager.model.Ticker;
+import com.ms.portfoliomanager.model.TickerDTO;
 import com.ms.portfoliomanager.publisher.MarketDataPublisher;
 import com.ms.portfoliomanager.subscriber.MarketDataSubscriber;
 import lombok.extern.java.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,10 @@ import javax.jms.TextMessage;
 @Log
 public class Config implements JmsListenerConfigurer {
 
-    public static final String USER_PORTFOLIO = "user_portfolio.topic";
+    @Bean
+    public ModelMapper modelMapper(){
+        return new ModelMapper();
+    }
 
     @Bean
     DefaultJmsListenerContainerFactory getFactory(){
@@ -72,7 +76,7 @@ public class Config implements JmsListenerConfigurer {
                     String payload = textMessage.getText();
                    //  Ticker ticker = message.getBody(Ticker.class);
                    JSONObject obj =  new JSONObject(payload);//message.getBody(JSONObject.class);
-                    Ticker tic = Ticker.builder()
+                    TickerDTO tic = TickerDTO.builder()
                             .shareName(obj.get("shareName").toString())
                             .marketValue(Double.valueOf(obj.get("marketValue").toString()))
                             .tickerCode(obj.get("tickerCode").toString())

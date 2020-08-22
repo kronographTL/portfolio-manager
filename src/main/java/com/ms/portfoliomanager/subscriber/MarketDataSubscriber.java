@@ -1,7 +1,7 @@
 package com.ms.portfoliomanager.subscriber;
 
 import com.ms.portfoliomanager.model.Position;
-import com.ms.portfoliomanager.model.Ticker;
+import com.ms.portfoliomanager.model.TickerDTO;
 import com.ms.portfoliomanager.publisher.PortfolioPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
@@ -15,7 +15,7 @@ public class MarketDataSubscriber {
     @Autowired
     PortfolioPublisher portfolioPublisher;
 
-    public void receive(Ticker ticker) {
+    public void receive(TickerDTO ticker) {
         if(portfolioPublisher.userPublishMap!=null) {
             portfolioPublisher.userPublishMap.forEach((userId, portfolio) -> {
                 if (portfolio.getPositions().stream().map(Position::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {

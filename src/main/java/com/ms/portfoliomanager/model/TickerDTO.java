@@ -14,5 +14,7 @@ public class TickerDTO {
     private String tickerCode;
     private String shareName;
     private Double marketValue;
+    private Double expectedReturn;
+    private Double annualizedStandardDeviation;
 
 }

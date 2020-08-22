@@ -1,11 +1,12 @@
 package com.ms.portfoliomanager.publisher;
 
-import com.ms.portfoliomanager.model.Ticker;
+import com.ms.portfoliomanager.model.TickerDTO;
 import com.ms.portfoliomanager.service.market.MarketService;
 import com.ms.portfoliomanager.util.CommonUtil;
 import lombok.Data;
 import lombok.extern.java.Log;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -22,19 +23,19 @@ public class MarketDataPublisher {
 
     @Autowired
     private MarketService marketService;
-//    @Autowired
-//    private ModelMapper modelMapper;
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     private JmsTemplate jmsTemplate;
     private Map<String, Topic> topicMap;
-    private List<Ticker> tickers;
+    private List<TickerDTO> tickers;
 
 
     static Timer timer = new Timer();
 
     class Task extends TimerTask {
-        Ticker ticker;
-        Task(Ticker ticker){
+        TickerDTO ticker;
+        Task(TickerDTO ticker){
             this.ticker = ticker;
         }
 
@@ -61,7 +62,7 @@ public class MarketDataPublisher {
     }
 
     public Map<String, Topic> initTopicsMap() {
-        tickers = marketService.getAllTickers();
+        tickers = marketService.getAllTickers().stream().map(l-> modelMapper.map(l, TickerDTO.class)).collect(Collectors.toList());
         topicMap = tickers.stream().map(l-> l.getTickerCode()).collect(Collectors.toMap(ticker -> ticker,ticker-> new ActiveMQTopic(ticker+".topic")));
         return topicMap;
     }

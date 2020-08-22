@@ -15,10 +15,6 @@ public class ConsoleSubscriber {
 
     @JmsListener(destination = "user_01.topic", containerFactory = "topicListenerFactory")
     public void receiveTopicMessage(Portfolio portfolio) {
-//        System.out.println("--:    " + portfolio.getUserName()+"'s  Portfolio at "+ ZonedDateTime.now() +"    :--       "
-//                +System.lineSeparator() + System.lineSeparator()
-//                + "Positions : "+portfolio.getPositions() +System.lineSeparator()
-//                + "NAV    :   "+ portfolio.getNetAssetValue()+ System.lineSeparator());
         printDataInStandardFormat(portfolio);
     }
 

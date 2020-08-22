@@ -1,6 +1,6 @@
 package com.ms.portfoliomanager.util;
 
-import com.ms.portfoliomanager.model.Ticker;
+import com.ms.portfoliomanager.model.TickerDTO;
 import com.ms.portfoliomanager.processor.GBMotionCalculator;
 
 import java.text.SimpleDateFormat;
@@ -33,7 +33,7 @@ public class CommonUtil {
     }
 
 
-    public static Ticker generateSharePrice(Ticker ticker, int delay) {
+    public static TickerDTO generateSharePrice(TickerDTO ticker, int delay) {
         // TODO Brownian Motion
         //converting time in seconds
         double timeInSeconds = delay/10;
