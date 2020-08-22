@@ -42,21 +42,22 @@ public class FileServiceImpl implements FileService{
     }
 
     private void writeDataToExcelUsingString(HttpServletResponse response, Portfolio portfolio) {
-        String dataHeader = " shareCode,shareName,noOfShares,currentValue,totalValue,Net Asset Value";//TODO these can be Picked from the Properties files
+        String dataHeader = " SHARE CODE,SHARE NAME,NUMBER OF SHARES,MARKET VALUE,POSITION VALUE";//TODO these can be Picked from the Properties files
         StringBuilder dataBody = new StringBuilder();
         if(portfolio!=null){
             List<Position> positions = portfolio.getPositions();
             if (positions!=null){
                 for (Position pos : positions){
-                    dataBody.append(pos.getShareCode()).append(",")
-                            .append(pos.getShareName()).append(",")
-                            .append(pos.getNoOfShares()).append(",")
-                            .append(pos.getCurrentValue()).append(",")
-                            .append(pos.getTotalValue()).append(",")
-                            .append(portfolio.getNetAssetValue()).append(",")
+                    dataBody.append(pos.getShareCode()).append(UtilityConstants.COMMA)
+                            .append(pos.getShareName()).append(UtilityConstants.COMMA)
+                            .append(pos.getNoOfShares()).append(UtilityConstants.COMMA)
+                            .append(pos.getCurrentValue()).append(UtilityConstants.COMMA)
+                            .append(pos.getTotalValue()).append(UtilityConstants.COMMA)
                             .append(System.lineSeparator());
                 }
-
+                dataBody.append(System.lineSeparator()).append("NET ASSET VALUE ")
+                        .append(UtilityConstants.COMMA).append(UtilityConstants.COMMA).append(UtilityConstants.COMMA).append(UtilityConstants.COMMA)
+                        .append(portfolio.getNetAssetValue());
             }
         }
         String fileNamePrefix = "PORTFOLIO_REPORT_";

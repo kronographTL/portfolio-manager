@@ -33,10 +33,12 @@ public class CommonUtil {
     }
 
 
-    public static Ticker generateSharePrice(Ticker ticker) {
+    public static Ticker generateSharePrice(Ticker ticker, int delay) {
         // TODO Brownian Motion
-        Double value = GBMotionCalculator.geometricMotion(0.25,0.134,1,ticker.getInitialMarketValue(),0.33);//new Random().nextDouble();
-        ticker.setInitialMarketValue(value);
+        //converting time in seconds
+        double timeInSeconds = delay/10;
+        Double value = GBMotionCalculator.geometricMotion(ticker.getExpectedReturn(),ticker.getAnnualizedStandardDeviation(),timeInSeconds,ticker.getMarketValue(),0.33);//new Random().nextDouble();
+        ticker.setMarketValue(value);
         return ticker;
     }
 

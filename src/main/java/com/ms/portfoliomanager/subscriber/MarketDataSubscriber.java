@@ -21,7 +21,7 @@ public class MarketDataSubscriber {
                 if (portfolio.getPositions().stream().map(Position::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
                     Double nav = portfolio.getPositions().stream().map(l -> {
                         if (l.getShareCode().equalsIgnoreCase(ticker.getTickerCode())) {
-                            l.setCurrentValue(ticker.getInitialMarketValue());
+                            l.setCurrentValue(ticker.getMarketValue());
                             l.setTotalValue(l.getCurrentValue() * l.getNoOfShares());
                         }
                         return l.getTotalValue();

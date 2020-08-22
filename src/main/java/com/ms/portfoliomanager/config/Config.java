@@ -74,8 +74,10 @@ public class Config implements JmsListenerConfigurer {
                    JSONObject obj =  new JSONObject(payload);//message.getBody(JSONObject.class);
                     Ticker tic = Ticker.builder()
                             .shareName(obj.get("shareName").toString())
-                            .initialMarketValue(Double.valueOf(obj.get("initialMarketValue").toString()))
+                            .marketValue(Double.valueOf(obj.get("marketValue").toString()))
                             .tickerCode(obj.get("tickerCode").toString())
+                            .annualizedStandardDeviation(Double.valueOf(obj.get("annualizedStandardDeviation").toString()))
+                            .expectedReturn(Double.valueOf(obj.get("expectedReturn").toString()))
                             .build();
                      marketDataSubscriber.receive(tic);
                     //log.info("Market Consumer : " + tic); TODO Proper Logging for Market Consumer

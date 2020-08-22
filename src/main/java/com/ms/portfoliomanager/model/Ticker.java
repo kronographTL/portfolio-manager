@@ -17,6 +17,9 @@ public class Ticker {
     private String tickerId;
     private String tickerCode;
     private String shareName;
-    private Double initialMarketValue;
+    private Double marketValue;
+    private Double expectedReturn;
+    private Double annualizedStandardDeviation;
+
 
 }

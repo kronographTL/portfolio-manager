@@ -22,13 +22,14 @@ public class MarketDataPublisher {
 
     @Autowired
     private MarketService marketService;
-
+//    @Autowired
+//    private ModelMapper modelMapper;
     @Autowired
     private JmsTemplate jmsTemplate;
+    private Map<String, Topic> topicMap;
+    private List<Ticker> tickers;
 
-    Map<String, Topic> topicMap;
 
-    List<Ticker> tickers;
     static Timer timer = new Timer();
 
     class Task extends TimerTask {
@@ -39,10 +40,10 @@ public class MarketDataPublisher {
 
         @Override
         public void run() {
-            int delay = (5 + new Random().nextInt(20)) * 100;
+            int delay = (5 + new Random().nextInt(20)) * 100;// Time is in 1/100 seconds
             timer.schedule(new Task(ticker), delay);
             //log.info("Market Publishing " + ticker); TODO Proper Logging for Market Publisher
-            jmsTemplate.convertAndSend(topicMap.get(ticker.getTickerCode()), CommonUtil.generateSharePrice(ticker));
+            jmsTemplate.convertAndSend(topicMap.get(ticker.getTickerCode()), CommonUtil.generateSharePrice(ticker,delay));
         }
 
     }

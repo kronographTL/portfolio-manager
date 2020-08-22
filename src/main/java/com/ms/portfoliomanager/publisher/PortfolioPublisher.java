@@ -49,7 +49,7 @@ public class PortfolioPublisher {
         for (Position pos : positions){
             Ticker tic = marketService.getTickerByTickerCode(pos.getShareCode());
             pos.setShareName(tic.getShareName());
-            pos.setCurrentValue(tic.getInitialMarketValue());
+            pos.setCurrentValue(tic.getMarketValue());
         }
         portfolio.setPositions(positions);
         Topic userTopic;
