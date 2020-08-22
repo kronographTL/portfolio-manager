@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MarketRepository  extends JpaRepository<Ticker,String>{
+    Ticker findByTickerCode(String tickerCode);
 }

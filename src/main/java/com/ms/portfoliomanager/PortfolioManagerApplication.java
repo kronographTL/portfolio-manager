@@ -18,7 +18,7 @@ public class PortfolioManagerApplication {
 
 		// Launch the application
 		ConfigurableApplicationContext context = SpringApplication.run(PortfolioManagerApplication.class, args);
-		log.info("Nitin");
+		//log.info("");
 		MarketDataPublisher marketDataPublisher = context.getBean(MarketDataPublisher.class);
 		CompletableFuture.runAsync(marketDataPublisher::publish);
 		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);

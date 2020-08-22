@@ -14,7 +14,12 @@ public class MarketServiceImpl implements  MarketService {
     MarketRepository marketRepository;
     @Override
     public List<Ticker> getAllTickers() {
-        //List<Ticker> tickers = marketRepository.findAll();
-        return marketRepository.findAll();//tickers;//Arrays.asList("A","B","C");
+        return marketRepository.findAll();
     }
+
+    @Override
+    public Ticker getTickerByTickerCode(String tickerCode) {
+        return marketRepository.findByTickerCode(tickerCode);
+    }
+
 }

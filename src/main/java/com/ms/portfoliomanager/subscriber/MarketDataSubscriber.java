@@ -25,7 +25,7 @@ public class MarketDataSubscriber {
                             l.setTotalValue(l.getCurrentValue() * l.getNoOfShares());
                         }
                         return l.getTotalValue();
-                    }).mapToDouble(x -> x).sum();
+                    }).mapToDouble(x -> (x!=null) ? x:0.0 ).sum();
                     portfolio.setNetAssetValue(nav);
                     jmsTemplate.convertAndSend(portfolioPublisher.userTopicMap.get(userId), portfolio);
                 }

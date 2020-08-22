@@ -78,7 +78,7 @@ public class Config implements JmsListenerConfigurer {
                             .tickerCode(obj.get("tickerCode").toString())
                             .build();
                      marketDataSubscriber.receive(tic);
-                    log.info("Market Consumer : " + tic);
+                    //log.info("Market Consumer : " + tic); TODO Proper Logging for Market Consumer
                 } catch (JMSException | JSONException e) {
                    log.info("Error while Converting the Values ");
                 }

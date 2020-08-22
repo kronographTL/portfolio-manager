@@ -41,7 +41,7 @@ public class MarketDataPublisher {
         public void run() {
             int delay = (5 + new Random().nextInt(20)) * 100;
             timer.schedule(new Task(ticker), delay);
-            log.info("Market Publishing " + ticker);
+            //log.info("Market Publishing " + ticker); TODO Proper Logging for Market Publisher
             jmsTemplate.convertAndSend(topicMap.get(ticker.getTickerCode()), CommonUtil.generateSharePrice(ticker));
         }
 
