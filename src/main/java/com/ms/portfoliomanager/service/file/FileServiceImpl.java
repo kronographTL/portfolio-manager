@@ -15,14 +15,12 @@ import java.util.List;
 @Service
 public class FileServiceImpl implements FileService{
 
+    private Boolean isPublish = false;
+    private Portfolio portfolio = null;
 
-
-    Boolean isPublish = false;
-    Portfolio portfolio = null;
     @Override
     public void getPortfolioFileOnDemand(HttpServletResponse response) {
         isPublish = true;
-        //Portfolio portfolio = receiveMessage(Portfolio.builder().build());
         while(isPublish) {
             if(portfolio!=null) {
                 isPublish = false;
@@ -35,7 +33,6 @@ public class FileServiceImpl implements FileService{
     private void receiveMessage(Portfolio portfolio) {
         if(isPublish){
             this.portfolio = portfolio;
-            //writeDataToExcelUsingString(httpServletResponse,portfolio);
             isPublish = false;
         }
 
@@ -60,7 +57,7 @@ public class FileServiceImpl implements FileService{
                         .append(portfolio.getNetAssetValue());
             }
         }
-        String fileNamePrefix = "PORTFOLIO_REPORT_";
+        String fileNamePrefix = portfolio.getUserName()+"'_PORTFOLIO_REPORT_";
         String fileName = fileNamePrefix + CommonUtil.getDateString(LocalDateTime.now(),"ddMMMyy")+".xlsx";
         ExportToExcelUtil.exportExcel(response,dataHeader,dataBody.toString(),fileName, UtilityConstants.COMMA);
     }

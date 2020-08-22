@@ -4,5 +4,5 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface FileService {
 
-    public void getPortfolioFileOnDemand(HttpServletResponse response);
+    void getPortfolioFileOnDemand(HttpServletResponse response);
 }

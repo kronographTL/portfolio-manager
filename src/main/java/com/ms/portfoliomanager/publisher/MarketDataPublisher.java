@@ -17,8 +17,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Log
-@Component
 @Data
+@Component
 public class MarketDataPublisher {
 
     @Autowired
@@ -27,6 +27,7 @@ public class MarketDataPublisher {
     private ModelMapper modelMapper;
     @Autowired
     private JmsTemplate jmsTemplate;
+
     private Map<String, Topic> topicMap;
     private List<TickerDTO> tickers;
 
@@ -51,7 +52,7 @@ public class MarketDataPublisher {
 
     public void publish(){
         CompletableFuture.runAsync(()-> {
-            tickers.stream().forEach(ticker -> new Task(ticker).run());
+            tickers.forEach(ticker -> new Task(ticker).run());
         });
         try{
             Thread.sleep(5000);
@@ -63,7 +64,7 @@ public class MarketDataPublisher {
 
     public Map<String, Topic> initTopicsMap() {
         tickers = marketService.getAllTickers().stream().map(l-> modelMapper.map(l, TickerDTO.class)).collect(Collectors.toList());
-        topicMap = tickers.stream().map(l-> l.getTickerCode()).collect(Collectors.toMap(ticker -> ticker,ticker-> new ActiveMQTopic(ticker+".topic")));
+        topicMap = tickers.stream().map(TickerDTO::getTickerCode).collect(Collectors.toMap(ticker -> ticker, ticker-> new ActiveMQTopic(ticker+".topic")));
         return topicMap;
     }
 

@@ -23,8 +23,7 @@ public class FileSubscriber {
 
     @GetMapping("/download.excel")
     public void getPortfolioFileOnDemand(HttpServletResponse response) {
-       // portfolioPublisher.publish();
-        log.info("Started Publishing Portfoilo Publisher");
+        log.info("Started Publishing Portfolio Publisher");
         fileService.getPortfolioFileOnDemand(response);
     }
 }

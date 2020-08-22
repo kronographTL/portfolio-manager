@@ -12,6 +12,7 @@ import javax.persistence.*;
 @ToString
 @Builder
 public class Ticker {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String tickerId;

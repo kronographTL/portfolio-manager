@@ -30,6 +30,11 @@ import javax.jms.TextMessage;
 @Log
 public class Config implements JmsListenerConfigurer {
 
+    @Autowired
+    MarketDataPublisher marketDataPublisher;
+    @Autowired
+    MarketDataSubscriber marketDataSubscriber;
+
     @Bean
     public ModelMapper modelMapper(){
         return new ModelMapper();
@@ -57,20 +62,14 @@ public class Config implements JmsListenerConfigurer {
         return converter;
     }
 
-    @Autowired
-    MarketDataPublisher marketDataPublisher;
-    @Autowired
-    MarketDataSubscriber marketDataSubscriber;
-
     @Override
     public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
-        marketDataPublisher.initTopicsMap().keySet().stream().forEach(s -> {
+        marketDataPublisher.initTopicsMap().keySet().forEach(s -> {
             SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
             endpoint.setId(s);
             log.info(" listening to  " + s+".topic");
             endpoint.setDestination(s+".topic");
             endpoint.setMessageListener(message -> {
-                //System.out.println("Received Message By Market Consumer from  Market Publisher  : " + message);
                 try {
                     TextMessage textMessage = (TextMessage) message;
                     String payload = textMessage.getText();

@@ -12,6 +12,7 @@ public class MarketServiceImpl implements  MarketService {
 
     @Autowired
     MarketRepository marketRepository;
+
     @Override
     public List<Ticker> getAllTickers() {
         return marketRepository.findAll();

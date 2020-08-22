@@ -11,9 +11,6 @@ import java.util.List;
 @Builder
 public class Portfolio {
 
-//    Portfolio(List<String> tickers, String userId){
-//
-//    }
     private String userId;
     private String userName;
     private List<Position> positions;
