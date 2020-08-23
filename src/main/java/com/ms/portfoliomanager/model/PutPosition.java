@@ -7,11 +7,16 @@ import lombok.*;
 @Data
 @Builder
 @ToString
-public class Position {
+public class PutPosition{
 
     private String shareCode;
     private String shareName;
     private Integer noOfShares;
-    private Double currentValue;
     private Double totalValue;
+    private String tickerType;
+    private Double strikePrice;
+    private Double theoreticalValue;
+
+    //private ZonedDateTime expiredDate;
+
 }

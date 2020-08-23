@@ -20,7 +20,7 @@
         ```./gradlew bootRun```
     3. The application will run on Port 8080 (Please keep port 8080 free)
     4. The URL to Start the trade for user is 
-        http://localhost:8080/ui.html
-    5. The URL for text file printer that runs on demand and prints the latest market value for all positions and the NAV of the whole portfolio.
+        http://localhost:8080/trade.html
+    5. The URL for text file printer that runs on demand and prints the latest market value for all Positions and the NAV of the whole portfolio.
         http://localhost:8080/portfolio/download.excel
         

@@ -1,35 +1,96 @@
 package com.ms.portfoliomanager.subscriber;
 
-import com.ms.portfoliomanager.model.Position;
-import com.ms.portfoliomanager.model.TickerDTO;
+import com.ms.portfoliomanager.model.*;
+import com.ms.portfoliomanager.processor.PositionCalculator;
+import com.ms.portfoliomanager.publisher.MarketDataPublisher;
 import com.ms.portfoliomanager.publisher.PortfolioPublisher;
+import lombok.extern.java.Log;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.annotation.JmsListenerConfigurer;
+import org.springframework.jms.config.JmsListenerEndpointRegistrar;
+import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-@Component
-public class MarketDataSubscriber {
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
 
+@Log
+@Component
+public class MarketDataSubscriber implements JmsListenerConfigurer {
+
+    @Autowired
+    MarketDataPublisher marketDataPublisher;
     @Autowired
     JmsTemplate jmsTemplate;
     @Autowired
     PortfolioPublisher portfolioPublisher;
 
+    @Override
+    public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
+        marketDataPublisher.initTopicsMap().keySet().forEach(s -> {
+                    SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+                    endpoint.setId(s);
+                    log.info(" listening to  " + s+".topic");
+                    endpoint.setDestination(s+".topic");
+                    endpoint.setMessageListener(message -> {
+                        try {
+                            TextMessage textMessage = (TextMessage) message;
+                            String payload = textMessage.getText();
+                            //  Ticker ticker = message.getBody(Ticker.class);
+                            JSONObject obj =  new JSONObject(payload);//message.getBody(JSONObject.class);
+                            TickerDTO tic = TickerDTO.builder()
+                                    .shareName(obj.get("shareName").toString())
+                                    .marketValue(Double.valueOf(obj.get("marketValue").toString()))
+                                    .tickerCode(obj.get("tickerCode").toString())
+                                    .annualizedStandardDeviation(Double.valueOf(obj.get("annualizedStandardDeviation").toString()))
+                                    .expectedReturn(Double.valueOf(obj.get("expectedReturn").toString()))
+                                    .build();
+                            receive(tic);
+                            //log.info("Market Consumer : " + tic); TODO Proper Logging for Market Consumer
+                        } catch (JMSException | JSONException e) {
+                            log.info("Error while Converting the Values ");
+                        }
+                    });
+                    registrar.registerEndpoint(endpoint);
+                }
+        );
+    }
+
     public void receive(TickerDTO ticker) {
         if(portfolioPublisher.userPublishMap!=null) {
             portfolioPublisher.userPublishMap.forEach((userId, portfolio) -> {
-                if (portfolio.getPositions().stream().map(Position::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
-                    Double nav = portfolio.getPositions().stream().map(l -> {
-                        if (l.getShareCode().equalsIgnoreCase(ticker.getTickerCode())) {
-                            l.setCurrentValue(ticker.getMarketValue());
-                            l.setTotalValue(l.getCurrentValue() * l.getNoOfShares());
-                        }
-                        return l.getTotalValue();
-                    }).mapToDouble(x -> (x!=null) ? x:0.0 ).sum();
-                    portfolio.setNetAssetValue(nav);
-                    jmsTemplate.convertAndSend(portfolioPublisher.userTopicMap.get(userId), portfolio);
-                }
+                publishChangeInStocks(ticker, userId, portfolio);
+                publishChangeInCallOptions(ticker, userId, portfolio);
+                publishChangeInPutOptions(ticker, userId, portfolio);
             });
         }
     }
+
+    private void publishChangeInStocks(TickerDTO ticker, String userId, Portfolio portfolio) {
+        if (portfolio.getStockPositions().stream().map(StockPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
+            PositionCalculator.calculateStockPosition(ticker, portfolio);
+            PositionCalculator.calculateAndSetNetAssetValue(portfolio);
+            jmsTemplate.convertAndSend(portfolioPublisher.userTopicMap.get(userId), portfolio);
+        }
+    }
+
+    private void publishChangeInCallOptions(TickerDTO ticker, String userId, Portfolio portfolio) {
+        if (portfolio.getCallPositions().stream().map(CallPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
+            PositionCalculator.calculateCallOptions(ticker, portfolio);
+            PositionCalculator.calculateAndSetNetAssetValue(portfolio);
+            jmsTemplate.convertAndSend(portfolioPublisher.userTopicMap.get(userId), portfolio);
+        }
+    }
+
+    private void publishChangeInPutOptions(TickerDTO ticker, String userId, Portfolio portfolio) {
+        if (portfolio.getPutPositions().stream().map(PutPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
+            PositionCalculator.calculatePutOptions(ticker, portfolio);
+            PositionCalculator.calculateAndSetNetAssetValue(portfolio);
+            jmsTemplate.convertAndSend(portfolioPublisher.userTopicMap.get(userId), portfolio);
+        }
+    }
+
 }

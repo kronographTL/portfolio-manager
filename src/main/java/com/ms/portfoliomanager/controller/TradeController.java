@@ -1,7 +1,10 @@
 package com.ms.portfoliomanager.controller;
 
+import com.ms.portfoliomanager.domainValue.PositionType;
+import com.ms.portfoliomanager.model.CallPosition;
 import com.ms.portfoliomanager.model.Portfolio;
-import com.ms.portfoliomanager.model.Position;
+import com.ms.portfoliomanager.model.PutPosition;
+import com.ms.portfoliomanager.model.StockPosition;
 import com.ms.portfoliomanager.publisher.PortfolioPublisher;
 import com.ms.portfoliomanager.util.UtilityConstants;
 import lombok.extern.java.Log;
@@ -12,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Log
 @RestController
-@RequestMapping("/startTrade")
+@RequestMapping("/trade")
 public class TradeController {
     private String userName;
     @Autowired
@@ -28,13 +31,30 @@ public class TradeController {
         String filePath ="src/main/resources/trade/trade.csv";
         try(Stream<String> lines = Files.lines(Paths.get((filePath))))
         {
-            List<Position> positions = lines.skip(1).map(l-> {
-                String[] strings = l.split(UtilityConstants.COMMA);
-                return Position.builder().shareCode(strings[0]).noOfShares(Integer.parseInt(strings[1])).build();
-            }).collect(Collectors.toList());
+            List<StockPosition> stockPositions = new ArrayList<>();
+            List<CallPosition> callPositions = new ArrayList<>();
+            List<PutPosition> putPositions = new ArrayList<>();
+
+            lines.skip(1).forEach(line-> {
+                String[] string = line.split(UtilityConstants.COMMA);
+                if(PositionType.CALL.name().equals(string[0])){
+                    CallPosition position = CallPosition.builder().shareCode(string[1])
+                            .noOfShares(Integer.parseInt(string[2])).strikePrice(Double.parseDouble(string[3]))
+                            .tickerType(string[4]).build();
+                    callPositions.add(position);
+                }else if(PositionType.PUT.name().equals(string[0])) {
+                    PutPosition position = PutPosition.builder().shareCode(string[1])
+                            .noOfShares(Integer.parseInt(string[2])).strikePrice(Double.parseDouble(string[3]))
+                            .tickerType(string[4]).build();
+                    putPositions.add(position);
+                }else{
+                    StockPosition position = StockPosition.builder().shareCode(string[1]).noOfShares(Integer.parseInt(string[2])).build();
+                    stockPositions.add(position);
+                }
+            });
             //TODO
 
-            Portfolio portfolio=Portfolio.builder().userId("user_01").userName(" Dow Joe").positions(positions).build();
+            Portfolio portfolio=Portfolio.builder().userId("user_01").userName(" Dow Joe").stockPositions(stockPositions).callPositions(callPositions).putPositions(putPositions).build();
             userName = portfolio.getUserName();
 
         portfolioPublisher.createPortfolio(portfolio);

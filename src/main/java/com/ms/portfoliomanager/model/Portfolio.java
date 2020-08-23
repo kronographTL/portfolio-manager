@@ -13,7 +13,9 @@ public class Portfolio {
 
     private String userId;
     private String userName;
-    private List<Position> positions;
+    private List<StockPosition> stockPositions;
+    private List<PutPosition> putPositions;
+    private List<CallPosition> callPositions;
     private Double netAssetValue;
 
 }

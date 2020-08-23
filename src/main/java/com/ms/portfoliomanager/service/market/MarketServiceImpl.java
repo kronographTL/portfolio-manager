@@ -5,7 +5,9 @@ import com.ms.portfoliomanager.model.Ticker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class MarketServiceImpl implements  MarketService {
@@ -19,8 +21,9 @@ public class MarketServiceImpl implements  MarketService {
     }
 
     @Override
-    public Ticker getTickerByTickerCode(String tickerCode) {
-        return marketRepository.findByTickerCode(tickerCode);
+    public List<Ticker> getAllTickersById(Set<String> tickerCodes) {
+        return marketRepository.findAllByTickerCode(tickerCodes);
     }
+
 
 }

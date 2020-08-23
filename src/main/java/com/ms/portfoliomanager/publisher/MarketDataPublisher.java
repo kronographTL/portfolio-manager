@@ -44,6 +44,7 @@ public class MarketDataPublisher {
         public void run() {
             int delay = (5 + new Random().nextInt(20)) * 100;// Time is in 1/100 seconds
             timer.schedule(new Task(ticker), delay);
+
             //log.info("Market Publishing " + ticker); TODO Proper Logging for Market Publisher
             jmsTemplate.convertAndSend(topicMap.get(ticker.getTickerCode()), CommonUtil.generateSharePrice(ticker,delay));
         }
@@ -51,9 +52,7 @@ public class MarketDataPublisher {
     }
 
     public void publish(){
-        CompletableFuture.runAsync(()-> {
-            tickers.forEach(ticker -> new Task(ticker).run());
-        });
+        CompletableFuture.runAsync(()-> tickers.forEach(ticker -> new Task(ticker).run()));
         try{
             Thread.sleep(5000);
         }catch (Exception ex){
