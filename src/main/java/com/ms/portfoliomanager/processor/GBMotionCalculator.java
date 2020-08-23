@@ -6,8 +6,8 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 public class GBMotionCalculator {
 
     public static double geometricMotionForStocks(Double mu, Double sigma, Double time, Double price, Double normalDistFactor){
-        NormalDistribution normalDistribution = new NormalDistribution(mu,sigma);
-        normalDistFactor = normalDistribution.inverseCumulativeProbability(normalDistFactor);
+//        NormalDistribution normalDistribution = new NormalDistribution(mu,sigma);
+//        normalDistFactor = normalDistribution.inverseCumulativeProbability(normalDistFactor);
         double part = time/UtilityConstants.GBMConstant;
         double muPart = mu*part;
         double ndPart = (sigma*normalDistFactor)*Math.sqrt(part);

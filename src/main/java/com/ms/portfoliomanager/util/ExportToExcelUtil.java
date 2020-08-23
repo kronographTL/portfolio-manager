@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExportToExcelUtil {
+
     public static void exportExcel(HttpServletResponse response, String title, String data, String fileName, String splitStr)  {
         try {
             response.setContentType("application/vnd.ms-excel");

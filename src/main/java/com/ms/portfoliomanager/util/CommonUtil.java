@@ -9,9 +9,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 
 public class CommonUtil {
 
+    private static Random random = new Random();
     public static String getDateString(LocalDateTime dateTime, String datePatten) {
         if (dateTime == null) {
             return UtilityConstants.EMPTY_STRING;
@@ -31,7 +33,7 @@ public class CommonUtil {
 
     public static TickerDTO generateSharePrice(TickerDTO ticker, int delay) {
         double timeInSeconds = delay/10;
-        Double value = GBMotionCalculator.geometricMotionForStocks(ticker.getExpectedReturn(),ticker.getAnnualizedStandardDeviation(),timeInSeconds,ticker.getMarketValue(),0.33);//new Random().nextDouble();
+        Double value = GBMotionCalculator.geometricMotionForStocks(ticker.getExpectedReturn(),ticker.getAnnualizedStandardDeviation(),timeInSeconds,ticker.getMarketValue(),random.nextGaussian());//new Random().nextDouble();
         ticker.setMarketValue(value);
         return ticker;
     }

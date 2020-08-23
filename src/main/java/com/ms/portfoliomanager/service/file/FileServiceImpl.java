@@ -52,13 +52,13 @@ public class FileServiceImpl implements FileService{
                             .append(pos.getTotalValue()).append(UtilityConstants.COMMA)
                             .append(System.lineSeparator());
                 }
-                dataBody.append(System.lineSeparator()).append("NET ASSET VALUE ")
-                        .append(UtilityConstants.COMMA).append(UtilityConstants.COMMA).append(UtilityConstants.COMMA).append(UtilityConstants.COMMA)
-                        .append(portfolio.getNetAssetValue());
+                dataBody.append(System.lineSeparator())
+                        .append(UtilityConstants.COMMA).append(UtilityConstants.COMMA).append(UtilityConstants.COMMA)
+                        .append("NET ASSET VALUE ").append(UtilityConstants.COMMA).append(portfolio.getNetAssetValue());
             }
         }
-        String fileNamePrefix = portfolio.getUserName()+"'_PORTFOLIO_REPORT_";
-        String fileName = fileNamePrefix + CommonUtil.getDateString(LocalDateTime.now(),"ddMMMyy")+".xlsx";
+        String fileNamePrefix = "'_PORTFOLIO_REPORT_";
+        String fileName = portfolio.getUserName().toUpperCase()+fileNamePrefix + CommonUtil.getDateString(LocalDateTime.now(),"ddMMMyy")+".xlsx";
         ExportToExcelUtil.exportExcel(response,dataHeader,dataBody.toString(),fileName, UtilityConstants.COMMA);
     }
 }
