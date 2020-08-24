@@ -62,34 +62,34 @@ public class MarketDataSubscriber implements JmsListenerConfigurer {
     public void receive(TickerDTO ticker) {
         if(portfolioManager.userPublishMap!=null) {
             portfolioManager.userPublishMap.forEach((userId, portfolio) -> {
-                publishChangeInStocks(ticker, userId, portfolio);
-                publishChangeInCallOptions(ticker, userId, portfolio);
-                publishChangeInPutOptions(ticker, userId, portfolio);
+                publishChangeInStocks(ticker, portfolio);
+                publishChangeInCallOptions(ticker, portfolio);
+                publishChangeInPutOptions(ticker, portfolio);
             });
         }
     }
 
-    private void publishChangeInStocks(TickerDTO ticker, String userId, Portfolio portfolio) {
+    private void publishChangeInStocks(TickerDTO ticker, Portfolio portfolio) {
         if (portfolio.getStockPositions().stream().map(StockPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
             PositionCalculator.calculateStockPosition(ticker, portfolio);
             PositionCalculator.calculateAndSetNetAssetValue(portfolio);
-            jmsTemplate.convertAndSend(portfolioManager.userTopicMap.get(userId), portfolio);
+            jmsTemplate.convertAndSend(portfolioManager.userTopicMap.get(portfolio.getUserId()), portfolio);
         }
     }
 
-    private void publishChangeInCallOptions(TickerDTO ticker, String userId, Portfolio portfolio) {
+    private void publishChangeInCallOptions(TickerDTO ticker, Portfolio portfolio) {
         if (portfolio.getCallPositions().stream().map(CallPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
             PositionCalculator.calculateCallOptions(ticker, portfolio);
             PositionCalculator.calculateAndSetNetAssetValue(portfolio);
-            jmsTemplate.convertAndSend(portfolioManager.userTopicMap.get(userId), portfolio);
+            jmsTemplate.convertAndSend(portfolioManager.userTopicMap.get(portfolio.getUserId()), portfolio);
         }
     }
 
-    private void publishChangeInPutOptions(TickerDTO ticker, String userId, Portfolio portfolio) {
+    private void publishChangeInPutOptions(TickerDTO ticker, Portfolio portfolio) {
         if (portfolio.getPutPositions().stream().map(PutPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
             PositionCalculator.calculatePutOptions(ticker, portfolio);
             PositionCalculator.calculateAndSetNetAssetValue(portfolio);
-            jmsTemplate.convertAndSend(portfolioManager.userTopicMap.get(userId), portfolio);
+            jmsTemplate.convertAndSend(portfolioManager.userTopicMap.get(portfolio.getUserId()), portfolio);
         }
     }
 
