@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 
 @Component
-public class PortfolioPublisher {
+public class PortfolioManager {
 
     public Map<String, Topic> userTopicMap;
     public Map<String, Portfolio> userPublishMap;
@@ -25,7 +25,7 @@ public class PortfolioPublisher {
     MarketService marketService;
     private JmsTemplate jmsTemplate;
     @Autowired
-    PortfolioPublisher(JmsTemplate jmsTemplate){
+    PortfolioManager(JmsTemplate jmsTemplate){
         this.jmsTemplate = jmsTemplate;
         userTopicMap = new HashMap<>();
         userPublishMap = new HashMap<>();

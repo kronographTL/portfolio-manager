@@ -1,11 +1,12 @@
 package com.ms.portfoliomanager.controller;
 
 import com.ms.portfoliomanager.domainValue.PositionType;
+import com.ms.portfoliomanager.exception.TradeFileNotFoundException;
 import com.ms.portfoliomanager.model.CallPosition;
 import com.ms.portfoliomanager.model.Portfolio;
 import com.ms.portfoliomanager.model.PutPosition;
 import com.ms.portfoliomanager.model.StockPosition;
-import com.ms.portfoliomanager.publisher.PortfolioPublisher;
+import com.ms.portfoliomanager.publisher.PortfolioManager;
 import com.ms.portfoliomanager.util.UtilityConstants;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,9 @@ public class TradeController {
     public static final String USER_NAME = " Dow Joe";
 
     @Autowired
-    PortfolioPublisher portfolioPublisher;
+    PortfolioManager portfolioManager;
     @GetMapping
-    public String startTrade(){
+    public String startTrade() throws TradeFileNotFoundException {
         String filePath ="src/main/resources/trade/trade.csv";
         try(Stream<String> lines = Files.lines(Paths.get((filePath))))
         {
@@ -58,10 +59,10 @@ public class TradeController {
 
             Portfolio portfolio=Portfolio.builder().userId(USER_ID).userName(USER_NAME).stockPositions(stockPositions).callPositions(callPositions).putPositions(putPositions).build();
 
-        portfolioPublisher.createPortfolio(portfolio);
+        portfolioManager.createPortfolio(portfolio);
         }
         catch (Exception e) {
-            log.info("The fie does not found on " + filePath+ " path");
+            throw  new TradeFileNotFoundException("The Trade file for "+USER_NAME + " Not found ");
         }
         return  "<h1>  ('-')    "+ USER_NAME.toUpperCase() +"  Your Trade Started Successfully   ('-')   </h1>";
     }

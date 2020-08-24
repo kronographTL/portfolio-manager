@@ -18,12 +18,11 @@ public class PortfolioManagerApplication {
 
 		// Launch the application
 		ConfigurableApplicationContext context = SpringApplication.run(PortfolioManagerApplication.class, args);
-		//log.info("");
 		MarketDataPublisher marketDataPublisher = context.getBean(MarketDataPublisher.class);
-		CompletableFuture.runAsync(marketDataPublisher::publish);
+		CompletableFuture.runAsync(marketDataPublisher::publish);// Starting the Market Publisher
+		log.info("Market Publisher Started The Market is Up Now");
 		JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
 
-		// Send a message with a POJO - the template reuse the message converter
 
 	}
 

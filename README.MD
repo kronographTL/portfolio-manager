@@ -27,6 +27,10 @@
        for the beautification of the logs I have kept them as System.out.println Statements to avoid the time and class name logging which happens if I use log4j or @Log from lambook
     7. The URL for text file printer that runs on demand and prints the latest market value for all Positions and the NAV of the whole portfolio.
         http://localhost:8080/portfolio/download.excel
+    8. The URL to See the H2 database Console is 
+        http://localhost:8080/h2-console/login.jsp
+        It will ask for login password which is 'password' --> you can get it from the application.properties file as well
+        
      
      
 ## Assumptions Made    

@@ -3,7 +3,7 @@ package com.ms.portfoliomanager.subscriber;
 import com.ms.portfoliomanager.model.*;
 import com.ms.portfoliomanager.processor.PositionCalculator;
 import com.ms.portfoliomanager.publisher.MarketDataPublisher;
-import com.ms.portfoliomanager.publisher.PortfolioPublisher;
+import com.ms.portfoliomanager.publisher.PortfolioManager;
 import lombok.extern.java.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +26,7 @@ public class MarketDataSubscriber implements JmsListenerConfigurer {
     @Autowired
     JmsTemplate jmsTemplate;
     @Autowired
-    PortfolioPublisher portfolioPublisher;
+    PortfolioManager portfolioManager;
 
     @Override
     public void configureJmsListeners(JmsListenerEndpointRegistrar registrar) {
@@ -60,8 +60,8 @@ public class MarketDataSubscriber implements JmsListenerConfigurer {
     }
 
     public void receive(TickerDTO ticker) {
-        if(portfolioPublisher.userPublishMap!=null) {
-            portfolioPublisher.userPublishMap.forEach((userId, portfolio) -> {
+        if(portfolioManager.userPublishMap!=null) {
+            portfolioManager.userPublishMap.forEach((userId, portfolio) -> {
                 publishChangeInStocks(ticker, userId, portfolio);
                 publishChangeInCallOptions(ticker, userId, portfolio);
                 publishChangeInPutOptions(ticker, userId, portfolio);
@@ -73,7 +73,7 @@ public class MarketDataSubscriber implements JmsListenerConfigurer {
         if (portfolio.getStockPositions().stream().map(StockPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
             PositionCalculator.calculateStockPosition(ticker, portfolio);
             PositionCalculator.calculateAndSetNetAssetValue(portfolio);
-            jmsTemplate.convertAndSend(portfolioPublisher.userTopicMap.get(userId), portfolio);
+            jmsTemplate.convertAndSend(portfolioManager.userTopicMap.get(userId), portfolio);
         }
     }
 
@@ -81,7 +81,7 @@ public class MarketDataSubscriber implements JmsListenerConfigurer {
         if (portfolio.getCallPositions().stream().map(CallPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
             PositionCalculator.calculateCallOptions(ticker, portfolio);
             PositionCalculator.calculateAndSetNetAssetValue(portfolio);
-            jmsTemplate.convertAndSend(portfolioPublisher.userTopicMap.get(userId), portfolio);
+            jmsTemplate.convertAndSend(portfolioManager.userTopicMap.get(userId), portfolio);
         }
     }
 
@@ -89,7 +89,7 @@ public class MarketDataSubscriber implements JmsListenerConfigurer {
         if (portfolio.getPutPositions().stream().map(PutPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
             PositionCalculator.calculatePutOptions(ticker, portfolio);
             PositionCalculator.calculateAndSetNetAssetValue(portfolio);
-            jmsTemplate.convertAndSend(portfolioPublisher.userTopicMap.get(userId), portfolio);
+            jmsTemplate.convertAndSend(portfolioManager.userTopicMap.get(userId), portfolio);
         }
     }
 

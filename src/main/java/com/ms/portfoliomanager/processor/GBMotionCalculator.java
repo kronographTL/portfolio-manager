@@ -54,8 +54,6 @@ public class GBMotionCalculator {
     }
 
     private static double getD1(double marketValue, Double lockedValue,Double sigma) {
-         // r in the formula
-        //double sigma = ticker.getAnnualizedStandardDeviation();
         double logSK = Math.log(marketValue/lockedValue);  // ln(S/K)
         double rateAnnualDeviation = TIME*(FREE_INTEREST_RATE + ((sigma*sigma)/2));// (𝑟 + 𝜎2/2 )t
         double numerator = logSK + rateAnnualDeviation;
