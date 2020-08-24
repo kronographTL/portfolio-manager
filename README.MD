@@ -16,8 +16,10 @@
 - Run the Application
     1. Download the application in Directory from Git Hub 
     2. Run the following command from project root (Using your Terminal or Command Prompt)
-    
+        1. For Mac / Linux
         ```./gradlew bootRun```
+        2. For Windows 
+        ```gradlew bootRun```
     3. The application will run on Port 8080 (Please keep port 8080 free)
     4. Now the Market is already started I am not printing the sending and receiving logs of the Market so that they will not disturb 
        the format of Console subscriber. Otherwise we can create a separate log file for the application logs. 
