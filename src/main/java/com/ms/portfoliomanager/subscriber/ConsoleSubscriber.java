@@ -21,8 +21,8 @@ public class ConsoleSubscriber {
     }
 
     private void printDataInStandardFormat(Portfolio portfolio) {
-        System.out.println("_____________________________________________________________________________________________________________________________________________________"+System.lineSeparator());
-        System.out.println("    USER                "+ portfolio.getUserName()+"'s");
+        System.out.println("_________________________________________________________________________________________________________________________________________________________________________________________________"+System.lineSeparator());
+        System.out.println("    USER               "+ portfolio.getUserName()+"'s");
         System.out.println("    TIME                "+ ZonedDateTime.now());
         System.out.println("    Positions");
         for (StockPosition p : portfolio.getStockPositions()){
@@ -35,6 +35,6 @@ public class ConsoleSubscriber {
             System.out.println("                        "+p.toString());
         }
         System.out.println(System.lineSeparator()+"    Net Asset Value     "+portfolio.getNetAssetValue());
-        System.out.println("_____________________________________________________________________________________________________________________________________________________"+System.lineSeparator());
+        System.out.println("_________________________________________________________________________________________________________________________________________________________________________________________________"+System.lineSeparator());
     }
 }
