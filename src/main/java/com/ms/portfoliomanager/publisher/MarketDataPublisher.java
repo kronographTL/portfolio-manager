@@ -44,8 +44,6 @@ public class MarketDataPublisher {
         public void run() {
             int delay = (5 + new Random().nextInt(20)) * 100;// Time is in 1/100 seconds
             timer.schedule(new Task(ticker), delay);
-
-            //log.info("Market Publishing " + ticker); TODO Proper Logging for Market Publisher
             jmsTemplate.convertAndSend(topicMap.get(ticker.getTickerCode()), CommonUtil.generateSharePrice(ticker,delay));
         }
 
@@ -56,7 +54,7 @@ public class MarketDataPublisher {
         try{
             Thread.sleep(5000);
         }catch (Exception ex){
-            log.info("Problem ");// TODO define proper message here
+            log.info("The thread got interrupted while running the tickers  ");
         }
 
     }

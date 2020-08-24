@@ -16,6 +16,5 @@ public class CallPosition {
     private String tickerType;
     private Double strikePrice;
     private Double theoreticalValue;
-    //private ZonedDateTime expiredDate;
 
 }

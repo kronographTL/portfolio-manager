@@ -23,7 +23,10 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("/trade")
 public class TradeController {
-    private String userName;
+
+    public static final String USER_ID = "user_01";
+    public static final String USER_NAME = " Dow Joe";
+
     @Autowired
     PortfolioPublisher portfolioPublisher;
     @GetMapping
@@ -52,16 +55,14 @@ public class TradeController {
                     stockPositions.add(position);
                 }
             });
-            //TODO
 
-            Portfolio portfolio=Portfolio.builder().userId("user_01").userName(" Dow Joe").stockPositions(stockPositions).callPositions(callPositions).putPositions(putPositions).build();
-            userName = portfolio.getUserName();
+            Portfolio portfolio=Portfolio.builder().userId(USER_ID).userName(USER_NAME).stockPositions(stockPositions).callPositions(callPositions).putPositions(putPositions).build();
 
         portfolioPublisher.createPortfolio(portfolio);
         }
         catch (Exception e) {
             log.info("The fie does not found on " + filePath+ " path");
         }
-        return  "<h1>  ('-')    "+ userName.toUpperCase() +"  Your Trade Started Successfully   ('-')   </h1>";
+        return  "<h1>  ('-')    "+ USER_NAME.toUpperCase() +"  Your Trade Started Successfully   ('-')   </h1>";
     }
 }

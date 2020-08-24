@@ -1,6 +1,5 @@
 package com.ms.portfoliomanager.subscriber;
 
-import com.ms.portfoliomanager.publisher.PortfolioPublisher;
 import com.ms.portfoliomanager.service.file.FileService;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,6 @@ public class FileSubscriber {
 
     @Autowired
     private FileService fileService;
-
-    @Autowired
-    PortfolioPublisher portfolioPublisher;
 
     @GetMapping("/download.excel")
     public void getPortfolioFileOnDemand(HttpServletResponse response) {

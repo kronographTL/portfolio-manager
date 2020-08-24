@@ -33,23 +33,11 @@ public class MarketDataSubscriber implements JmsListenerConfigurer {
         marketDataPublisher.initTopicsMap().keySet().forEach(s -> {
                     SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
                     endpoint.setId(s);
-                    log.info(" listening to  " + s+".topic");
                     endpoint.setDestination(s+".topic");
                     endpoint.setMessageListener(message -> {
                         try {
-                            TextMessage textMessage = (TextMessage) message;
-                            String payload = textMessage.getText();
-                            //  Ticker ticker = message.getBody(Ticker.class);
-                            JSONObject obj =  new JSONObject(payload);//message.getBody(JSONObject.class);
-                            TickerDTO tic = TickerDTO.builder()
-                                    .shareName(obj.get("shareName").toString())
-                                    .marketValue(Double.valueOf(obj.get("marketValue").toString()))
-                                    .tickerCode(obj.get("tickerCode").toString())
-                                    .annualizedStandardDeviation(Double.valueOf(obj.get("annualizedStandardDeviation").toString()))
-                                    .expectedReturn(Double.valueOf(obj.get("expectedReturn").toString()))
-                                    .build();
+                            TickerDTO tic = getTickerDTO((TextMessage) message);
                             receive(tic);
-                            //log.info("Market Consumer : " + tic); TODO Proper Logging for Market Consumer
                         } catch (JMSException | JSONException e) {
                             log.info("Error while Converting the Values ");
                         }
@@ -57,6 +45,18 @@ public class MarketDataSubscriber implements JmsListenerConfigurer {
                     registrar.registerEndpoint(endpoint);
                 }
         );
+    }
+
+    private TickerDTO getTickerDTO(TextMessage message) throws JMSException, JSONException {
+        String payload = message.getText();
+        JSONObject obj =  new JSONObject(payload);
+        return TickerDTO.builder()
+                .shareName(obj.get("shareName").toString())
+                .marketValue(Double.valueOf(obj.get("marketValue").toString()))
+                .tickerCode(obj.get("tickerCode").toString())
+                .annualizedStandardDeviation(Double.valueOf(obj.get("annualizedStandardDeviation").toString()))
+                .expectedReturn(Double.valueOf(obj.get("expectedReturn").toString()))
+                .build();
     }
 
     public void receive(TickerDTO ticker) {

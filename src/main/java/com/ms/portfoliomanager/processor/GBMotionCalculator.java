@@ -27,7 +27,7 @@ public class GBMotionCalculator {
 
         // 𝑐 = 𝑆𝑁(𝑑1) − 𝐾𝑒−𝑟t𝑁(𝑑2) --> formula to calculate CallOption Price
         callValue = (marketValue*cumulativeProbabilityOfD1) - getEquationWithStrikePart(lockedValue, cumulativeProbabilityOfD2);
-        return callValue;// TODO calculate value Using Formula
+        return callValue;
     }
 
     private static double getEquationWithStrikePart(Double lockedValue, double cumulativeProbabilityOfD2) {

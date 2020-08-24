@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Component
 public class PortfolioPublisher {
 
-    //private Topic topic;
     public Map<String, Topic> userTopicMap;
     public Map<String, Portfolio> userPublishMap;
 

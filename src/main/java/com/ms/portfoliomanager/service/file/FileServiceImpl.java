@@ -42,7 +42,7 @@ public class FileServiceImpl implements FileService{
     }
 
     private void writeDataToExcelUsingString(HttpServletResponse response, Portfolio portfolio) {
-        String dataHeader = " POSITION TYPE,SHARE CODE,SHARE NAME,NUMBER OF SHARES,MARKET VALUE,POSITION VALUE";//TODO these can be Picked from the Properties files
+        String dataHeader = UtilityConstants.DATA_HEADER;
         StringBuilder dataBody = new StringBuilder();
         if(portfolio!=null){
             List<StockPosition> stockPositions = portfolio.getStockPositions();
@@ -88,7 +88,7 @@ public class FileServiceImpl implements FileService{
             }
             dataBody.append(System.lineSeparator())
                     .append(UtilityConstants.COMMA).append(UtilityConstants.COMMA).append(UtilityConstants.COMMA).append(UtilityConstants.COMMA)
-                    .append("NET ASSET VALUE ").append(UtilityConstants.COMMA).append(portfolio.getNetAssetValue());
+                    .append(UtilityConstants.NET_ASSET_VALUE).append(UtilityConstants.COMMA).append(portfolio.getNetAssetValue());
         }
         String fileNamePrefix = "'_PORTFOLIO_REPORT_";
         String fileName = portfolio.getUserName().toUpperCase()+fileNamePrefix + CommonUtil.getDateString(LocalDateTime.now(),"ddMMMyy")+".xlsx";

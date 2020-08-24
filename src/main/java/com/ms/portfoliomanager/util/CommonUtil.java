@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
@@ -35,16 +34,11 @@ public class CommonUtil {
     public static TickerDTO generateSharePrice(TickerDTO ticker, int delay) {
         double timeInSeconds = delay/10;
         Double value = GBMotionCalculator.geometricMotionForStocks(ticker.getExpectedReturn(),ticker.getAnnualizedStandardDeviation(),timeInSeconds,ticker.getMarketValue(),random.nextGaussian());
-//        if(value<=0){
-//          return generateSharePrice(ticker,delay);
-//        }
-
+        if(value<=0){
+          return generateSharePrice(ticker,delay);
+        }
         ticker.setMarketValue(value);
         return ticker;
     }
 
-
-    public static ZonedDateTime getDate(String s) {
-        return  ZonedDateTime.now();// TODO provide Impl to get date
-    }
 }

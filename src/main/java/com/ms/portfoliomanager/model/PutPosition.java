@@ -17,6 +17,4 @@ public class PutPosition{
     private Double strikePrice;
     private Double theoreticalValue;
 
-    //private ZonedDateTime expiredDate;
-
 }
