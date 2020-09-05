@@ -17,7 +17,7 @@ public class PositionUtil {
                 .append(System.lineSeparator());
     }
     public static void getCallPositionElementsWithComaSeparation(StringBuilder dataBody, CallPosition position) {
-        dataBody.append(PositionType.STOCK).append(UtilityConstants.COMMA)
+        dataBody.append(PositionType.CALL).append(UtilityConstants.COMMA)
                 .append(position.getShareCode()).append(UtilityConstants.COMMA)
                 .append(position.getShareName()).append(UtilityConstants.COMMA)
                 .append(position.getNoOfShares()).append(UtilityConstants.COMMA)
@@ -26,7 +26,7 @@ public class PositionUtil {
                 .append(System.lineSeparator());
     }
     public static void getPutPositionElementsWithComaSeparation(StringBuilder dataBody, PutPosition position) {
-        dataBody.append(PositionType.STOCK).append(UtilityConstants.COMMA)
+        dataBody.append(PositionType.PUT).append(UtilityConstants.COMMA)
                 .append(position.getShareCode()).append(UtilityConstants.COMMA)
                 .append(position.getShareName()).append(UtilityConstants.COMMA)
                 .append(position.getNoOfShares()).append(UtilityConstants.COMMA)

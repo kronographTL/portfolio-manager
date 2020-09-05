@@ -24,7 +24,7 @@
     4. Now the Market is already started I am not printing the sending and receiving logs of the Market so that they will not disturb 
        the format of Console subscriber. Otherwise we can create a separate log file for the application logs. 
     5. The URL to Start the trade for user is 
-        http://localhost:8080/trade.html
+        http://localhost:8080/trade
     6. Once we start the Trade The using above URL the POSITIONS and the Total NAV will start printing on the console 
        for the beautification of the logs I have kept them as System.out.println Statements to avoid the time and class name logging which happens if I use log4j or @Log from lambook
     7. The URL for text file printer that runs on demand and prints the latest market value for all Positions and the NAV of the whole portfolio.
