@@ -1,6 +1,7 @@
-package com.ms.portfoliomanager.publisher;
+package com.ms.portfoliomanager.processor;
 
 import com.ms.portfoliomanager.model.*;
+import com.ms.portfoliomanager.publisher.PortfolioPublisher;
 import com.ms.portfoliomanager.service.market.MarketService;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,9 @@ public class PortfolioManager {
     MarketService marketService;
     private JmsTemplate jmsTemplate;
     @Autowired
-    PortfolioManager(JmsTemplate jmsTemplate){
+    PortfolioPublisher portfolioPublisher;
+    @Autowired
+    PortfolioManager(JmsTemplate jmsTemplate) {
         this.jmsTemplate = jmsTemplate;
         userTopicMap = new HashMap<>();
         userPublishMap = new HashMap<>();
@@ -35,20 +38,20 @@ public class PortfolioManager {
 
         Set<String> stockCodes = getShareCodes(portfolio);
         List<Ticker> tickers = marketService.getAllTickersById(stockCodes);
-        Map<String,Ticker> tickerMap = tickers.stream().collect(Collectors.toMap(Ticker::getTickerCode, ticker -> ticker));
+        Map<String, Ticker> tickerMap = tickers.stream().collect(Collectors.toMap(Ticker::getTickerCode, ticker -> ticker));
         List<StockPosition> stockPositions = portfolio.getStockPositions();
         getUpdatedPortfolio(portfolio, tickerMap);
         portfolio.setStockPositions(stockPositions);
         Topic userTopic;
-        if(userTopicMap.containsKey(portfolio.getUserId())){
+        if (userTopicMap.containsKey(portfolio.getUserId())) {
             userTopic = userTopicMap.get(portfolio.getUserId());
-        }else{
+        } else {
             userTopic = new ActiveMQTopic(portfolio.getUserId() + ".topic");
-            userTopicMap.put(portfolio.getUserId(),userTopic);
+            userTopicMap.put(portfolio.getUserId(), userTopic);
 
         }
-        if(!userPublishMap.containsKey(portfolio.getUserId())){
-            userPublishMap.put(portfolio.getUserId(),portfolio);
+        if (!userPublishMap.containsKey(portfolio.getUserId())) {
+            userPublishMap.put(portfolio.getUserId(), portfolio);
         }
     }
 
@@ -78,4 +81,36 @@ public class PortfolioManager {
         return stockCodes;
     }
 
+    public void receiveTickerFromMarket(TickerDTO ticker) {
+        if (userPublishMap != null) {
+            userPublishMap.forEach((userId, portfolio) -> {
+                publishChangeInStocks(ticker, portfolio);
+                publishChangeInCallOptions(ticker, portfolio);
+                publishChangeInPutOptions(ticker, portfolio);
+                portfolioPublisher.publishPortfolio(portfolio,userTopicMap);
+            });
+        }
+    }
+
+    private void publishChangeInStocks(TickerDTO ticker, Portfolio portfolio) {
+        if (portfolio.getStockPositions().stream().map(StockPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
+            PositionCalculator.calculateStockPosition(ticker, portfolio);
+            PositionCalculator.calculateAndSetNetAssetValue(portfolio);
+
+        }
+    }
+
+    private void publishChangeInCallOptions(TickerDTO ticker, Portfolio portfolio) {
+        if (portfolio.getCallPositions().stream().map(CallPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
+            PositionCalculator.calculateCallOptions(ticker, portfolio);
+            PositionCalculator.calculateAndSetNetAssetValue(portfolio);
+        }
+    }
+
+    private void publishChangeInPutOptions(TickerDTO ticker, Portfolio portfolio) {
+        if (portfolio.getPutPositions().stream().map(PutPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
+            PositionCalculator.calculatePutOptions(ticker, portfolio);
+            PositionCalculator.calculateAndSetNetAssetValue(portfolio);
+        }
+    }
 }

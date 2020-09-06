@@ -6,7 +6,7 @@ import com.ms.portfoliomanager.model.CallPosition;
 import com.ms.portfoliomanager.model.Portfolio;
 import com.ms.portfoliomanager.model.PutPosition;
 import com.ms.portfoliomanager.model.StockPosition;
-import com.ms.portfoliomanager.publisher.PortfolioManager;
+import com.ms.portfoliomanager.processor.PortfolioManager;
 import com.ms.portfoliomanager.util.UtilityConstants;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
