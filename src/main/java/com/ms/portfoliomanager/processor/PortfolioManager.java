@@ -39,9 +39,9 @@ public class PortfolioManager {
         Set<String> stockCodes = getShareCodes(portfolio);
         List<Ticker> tickers = marketService.getAllTickersById(stockCodes);
         Map<String, Ticker> tickerMap = tickers.stream().collect(Collectors.toMap(Ticker::getTickerCode, ticker -> ticker));
-        List<StockPosition> stockPositions = portfolio.getStockPositions();
+        List<CommonStock> commonStocks = portfolio.getCommonStocks();
         getUpdatedPortfolio(portfolio, tickerMap);
-        portfolio.setStockPositions(stockPositions);
+        portfolio.setCommonStocks(commonStocks);
         Topic userTopic;
         if (userTopicMap.containsKey(portfolio.getUserId())) {
             userTopic = userTopicMap.get(portfolio.getUserId());
@@ -56,27 +56,22 @@ public class PortfolioManager {
     }
 
     private void getUpdatedPortfolio(Portfolio portfolio, Map<String, Ticker> tickerMap) {
-        portfolio.getStockPositions().forEach(position -> {
+        portfolio.getCommonStocks().forEach(position -> {
             Ticker tick = tickerMap.get(position.getShareCode());
             position.setCurrentValue(tick.getMarketValue());
             position.setShareName(tick.getShareName());
         });
-        portfolio.getCallPositions().forEach(position -> {
+        portfolio.getOptions().forEach(position -> {
             Ticker tick = tickerMap.get(position.getShareCode());
             position.setShareName(tick.getShareName());
         });
-        portfolio.getPutPositions().forEach(position -> {
-            Ticker tick = tickerMap.get(position.getShareCode());
-            position.setShareName(tick.getShareName());
-        });
+
     }
 
     private Set<String> getShareCodes(Portfolio portfolio) {
-        Set<String> stockCodes = portfolio.getStockPositions().stream().map(StockPosition::getShareCode
+        Set<String> stockCodes = portfolio.getCommonStocks().stream().map(CommonStock::getShareCode
         ).collect(Collectors.toSet());
-        stockCodes.addAll(portfolio.getCallPositions().stream().map(CallPosition::getShareCode
-        ).collect(Collectors.toSet()));
-        stockCodes.addAll(portfolio.getPutPositions().stream().map(PutPosition::getShareCode
+        stockCodes.addAll(portfolio.getOptions().stream().map(Option::getShareCode
         ).collect(Collectors.toSet()));
         return stockCodes;
     }
@@ -86,31 +81,29 @@ public class PortfolioManager {
             userPublishMap.forEach((userId, portfolio) -> {
                 publishChangeInStocks(ticker, portfolio);
                 publishChangeInCallOptions(ticker, portfolio);
-                publishChangeInPutOptions(ticker, portfolio);
                 portfolioPublisher.publishPortfolio(portfolio,userTopicMap);
             });
         }
     }
 
     private void publishChangeInStocks(TickerDTO ticker, Portfolio portfolio) {
-        if (portfolio.getStockPositions().stream().map(StockPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
-            PositionCalculator.calculateStockPosition(ticker, portfolio);
+        if (portfolio.getCommonStocks().stream().map(CommonStock::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
+            PositionCalculator.calculateCommonStockPositionValue(ticker, portfolio);
             PositionCalculator.calculateAndSetNetAssetValue(portfolio);
-
         }
     }
 
     private void publishChangeInCallOptions(TickerDTO ticker, Portfolio portfolio) {
-        if (portfolio.getCallPositions().stream().map(CallPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
-            PositionCalculator.calculateCallOptions(ticker, portfolio);
+        if (portfolio.getOptions().stream().map(Option::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
+            PositionCalculator.calculateOptionsValue(ticker, portfolio);
             PositionCalculator.calculateAndSetNetAssetValue(portfolio);
         }
     }
 
-    private void publishChangeInPutOptions(TickerDTO ticker, Portfolio portfolio) {
-        if (portfolio.getPutPositions().stream().map(PutPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
-            PositionCalculator.calculatePutOptions(ticker, portfolio);
-            PositionCalculator.calculateAndSetNetAssetValue(portfolio);
-        }
-    }
+//    private void publishChangeInPutOptions(TickerDTO ticker, Portfolio portfolio) {
+//        if (portfolio.getPutPositions().stream().map(PutPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
+//            PositionCalculator.calculatePutOptions(ticker, portfolio);
+//            PositionCalculator.calculateAndSetNetAssetValue(portfolio);
+//        }
+//    }
 }

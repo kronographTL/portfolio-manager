@@ -41,21 +41,18 @@ public class FileServiceImpl implements FileService{
         String dataHeader = UtilityConstants.DATA_HEADER;
         StringBuilder dataBody = new StringBuilder();
         if(portfolio!=null){
-            if (portfolio.getStockPositions() !=null){
-                portfolio.getStockPositions().forEach(position -> PositionUtil.getStockPositionElementsWithComaSeparation(dataBody,position));
+            if (portfolio.getCommonStocks() !=null){
+                portfolio.getCommonStocks().forEach(position -> PositionUtil.getCommonStockElementsWithComaSeparation(dataBody,position));
             }
-            if (portfolio.getCallPositions() !=null){
-                portfolio.getCallPositions().forEach(position -> PositionUtil.getCallPositionElementsWithComaSeparation(dataBody,position));
+            if (portfolio.getOptions() !=null){
+                portfolio.getOptions().forEach(position -> PositionUtil.getOptionElementsWithComaSeparation(dataBody,position));
 
-            }
-            if (portfolio.getPutPositions() !=null){
-                portfolio.getPutPositions().forEach(position -> PositionUtil.getPutPositionElementsWithComaSeparation(dataBody,position));
             }
             dataBody.append(System.lineSeparator())
                     .append(UtilityConstants.COMMA).append(UtilityConstants.COMMA).append(UtilityConstants.COMMA).append(UtilityConstants.COMMA)
                     .append(UtilityConstants.NET_ASSET_VALUE).append(UtilityConstants.COMMA).append(portfolio.getNetAssetValue());
         }
-        String fileNamePrefix = "'_PORTFOLIO_REPORT_";
+        String fileNamePrefix = "'s_PORTFOLIO_REPORT_";
         String fileName = portfolio.getUserName().toUpperCase()+fileNamePrefix + CommonUtil.getDateString(LocalDateTime.now(),"ddMMMyy")+".xlsx";
         ExportToExcelUtil.exportExcel(response,dataHeader,dataBody.toString(),fileName, UtilityConstants.COMMA);
     }

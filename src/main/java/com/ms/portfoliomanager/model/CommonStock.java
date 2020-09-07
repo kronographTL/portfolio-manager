@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class StockPosition {
+public class CommonStock {
 
     private String shareCode;
     private String shareName;

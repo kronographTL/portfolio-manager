@@ -1,11 +1,10 @@
 package com.ms.portfoliomanager.controller;
 
-import com.ms.portfoliomanager.domainValue.PositionType;
+import com.ms.portfoliomanager.domainValue.ProductType;
 import com.ms.portfoliomanager.exception.TradeFileNotFoundException;
-import com.ms.portfoliomanager.model.CallPosition;
+import com.ms.portfoliomanager.model.CommonStock;
+import com.ms.portfoliomanager.model.Option;
 import com.ms.portfoliomanager.model.Portfolio;
-import com.ms.portfoliomanager.model.PutPosition;
-import com.ms.portfoliomanager.model.StockPosition;
 import com.ms.portfoliomanager.processor.PortfolioManager;
 import com.ms.portfoliomanager.util.UtilityConstants;
 import lombok.extern.java.Log;
@@ -35,29 +34,23 @@ public class TradeController {
         String filePath ="src/main/resources/trade/trade.csv";
         try(Stream<String> lines = Files.lines(Paths.get((filePath))))
         {
-            List<StockPosition> stockPositions = new ArrayList<>();
-            List<CallPosition> callPositions = new ArrayList<>();
-            List<PutPosition> putPositions = new ArrayList<>();
+            List<CommonStock> commonStocks = new ArrayList<>();
+            List<Option> options = new ArrayList<>();
 
             lines.skip(1).forEach(line-> {
                 String[] string = line.split(UtilityConstants.COMMA);
-                if(PositionType.CALL.name().equals(string[0])){
-                    CallPosition position = CallPosition.builder().shareCode(string[1])
+                if(ProductType.CALL.name().equals(string[0]) || ProductType.PUT.name().equals(string[0])){
+                    Option option = Option.builder().optionType(string[0]).shareCode(string[1])
                             .noOfShares(Integer.parseInt(string[2])).strikePrice(Double.parseDouble(string[3]))
                             .tickerType(string[4]).build();
-                    callPositions.add(position);
-                }else if(PositionType.PUT.name().equals(string[0])) {
-                    PutPosition position = PutPosition.builder().shareCode(string[1])
-                            .noOfShares(Integer.parseInt(string[2])).strikePrice(Double.parseDouble(string[3]))
-                            .tickerType(string[4]).build();
-                    putPositions.add(position);
+                    options.add(option);
                 }else{
-                    StockPosition position = StockPosition.builder().shareCode(string[1]).noOfShares(Integer.parseInt(string[2])).build();
-                    stockPositions.add(position);
+                    CommonStock position = CommonStock.builder().shareCode(string[1]).noOfShares(Integer.parseInt(string[2])).build();
+                    commonStocks.add(position);
                 }
             });
 
-            Portfolio portfolio=Portfolio.builder().userId(USER_ID).userName(USER_NAME).stockPositions(stockPositions).callPositions(callPositions).putPositions(putPositions).build();
+            Portfolio portfolio=Portfolio.builder().userId(USER_ID).userName(USER_NAME).commonStocks(commonStocks).options(options).build();
 
         portfolioManager.createPortfolio(portfolio);
         }

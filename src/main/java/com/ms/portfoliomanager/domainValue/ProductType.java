@@ -1,5 +1,5 @@
 package com.ms.portfoliomanager.domainValue;
 
-public enum PositionType {
+public enum ProductType {
     CALL , PUT, STOCK
 }

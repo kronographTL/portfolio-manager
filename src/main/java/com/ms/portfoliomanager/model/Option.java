@@ -7,7 +7,7 @@ import lombok.*;
 @Data
 @Builder
 @ToString
-public class CallPosition {
+public class Option {
 
     private String shareCode;
     private String shareName;
@@ -16,5 +16,6 @@ public class CallPosition {
     private String tickerType;
     private Double strikePrice;
     private Double theoreticalValue;
+    private String optionType;
 
 }
