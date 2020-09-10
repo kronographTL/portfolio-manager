@@ -52,7 +52,7 @@ public class TradeController {
 
             Portfolio portfolio=Portfolio.builder().userId(USER_ID).userName(USER_NAME).commonStocks(commonStocks).options(options).build();
 
-        portfolioManager.createPortfolio(portfolio);
+        portfolio = portfolioManager.createPortfolio(portfolio);
         }
         catch (Exception e) {
             throw  new TradeFileNotFoundException("The Trade file for "+USER_NAME + " Not found ");

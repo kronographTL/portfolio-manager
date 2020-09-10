@@ -34,7 +34,7 @@ public class PortfolioManager {
         userPublishMap = new HashMap<>();
     }
 
-    public void createPortfolio(Portfolio portfolio) {
+    public Portfolio createPortfolio(Portfolio portfolio) {
 
         Set<String> stockCodes = getShareCodes(portfolio);
         List<Ticker> tickers = marketService.getAllTickersById(stockCodes);
@@ -53,6 +53,7 @@ public class PortfolioManager {
         if (!userPublishMap.containsKey(portfolio.getUserId())) {
             userPublishMap.put(portfolio.getUserId(), portfolio);
         }
+        return portfolio;
     }
 
     private void getUpdatedPortfolio(Portfolio portfolio, Map<String, Ticker> tickerMap) {
@@ -100,10 +101,4 @@ public class PortfolioManager {
         }
     }
 
-//    private void publishChangeInPutOptions(TickerDTO ticker, Portfolio portfolio) {
-//        if (portfolio.getPutPositions().stream().map(PutPosition::getShareCode).anyMatch(s -> s.equalsIgnoreCase(ticker.getTickerCode()))) {
-//            PositionCalculator.calculatePutOptions(ticker, portfolio);
-//            PositionCalculator.calculateAndSetNetAssetValue(portfolio);
-//        }
-//    }
 }
